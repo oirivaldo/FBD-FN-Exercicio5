@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Normalização Completa - Cliente e Pedido</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/white.min.css" rel="stylesheet">
+    <style>
+        .reveal pre {
+            font-size: 0.6em;
+            line-height: 1.2;
+        }
+        .reveal table {
+            font-size: 0.7em;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <section>
+                <h1>Normalização Completa</h1>
+                <h3>Cliente e Pedido</h3>
+            </section>
+
+            <section>
+                <h2>Relações Originais</h2>
+                <pre><code>
+Cliente(
+    idCliente, 
+    nomeCliente, 
+    (idTrans, dataTrans, valorTrans)
+)
+
+Pedido(
+    numPed, 
+    codCli, 
+    dataPed, 
+    nomeCli, 
+    codCidCli, 
+    nomeCidCli, 
+    (codProd, nomeProd, quant, valorUni, valorTotal)
+)
+                </code></pre>
+                <p>Problemas identificados:</p>
+                <ul>
+                    <li>Atributos multivalorados</li>
+                    <li>Redundância de dados</li>
+                    <li>Dependências não resolvidas</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>1ª Forma Normal (1FN)</h2>
+                <pre><code>
+Cliente(
+    idCliente, 
+    nomeCliente
+)
+
+Transacao(
+    idCliente, 
+    idTrans, 
+    dataTrans, 
+    valorTrans
+)
+
+Pedido(
+    numPed, 
+    codCli, 
+    dataPed, 
+    nomeCli, 
+    codCidCli, 
+    nomeCidCli
+)
+
+ItemPedido(
+    numPed, 
+    codProd, 
+    nomeProd, 
+    quant, 
+    valorUni, 
+    valorTotal
+)
+                </code></pre>
+                <p>Ações na 1FN:</p>
+                <ul>
+                    <li>Eliminar grupos repetitivos</li>
+                    <li>Criar tabelas separadas para atributos multivalorados</li>
+                    <li>Garantir atributos atômicos</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>2ª Forma Normal (2FN)</h2>
+                <pre><code>
+Cliente(
+    idCliente, 
+    nomeCliente
+)
+
+Transacao(
+    idCliente, 
+    idTrans, 
+    dataTrans, 
+    valorTrans
+)
+
+Pedido(
+    numPed, 
+    codCli, 
+    dataPed
+)
+
+DadosPedido(
+    numPed, 
+    nomeCli
+)
+
+Cidade(
+    codCidCli, 
+    nomeCidCli
+)
+
+ItemPedido(
+    numPed, 
+    codProd, 
+    nomeProd, 
+    quant, 
+    valorUni, 
+    valorTotal
+)
+                </code></pre>
+                <p>Ações na 2FN:</p>
+                <ul>
+                    <li>Eliminar dependências parciais</li>
+                    <li>Separar informações relacionadas</li>
+                    <li>Criar tabelas independentes</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>3ª Forma Normal (3FN)</h2>
+                <pre><code>
+Cliente(
+    idCliente, 
+    nomeCliente
+)
+
+Transacao(
+    idCliente, 
+    idTrans, 
+    dataTrans, 
+    valorTrans
+)
+
+Pedido(
+    numPed, 
+    codCli, 
+    dataPed
+)
+
+DadosPedido(
+    numPed, 
+    nomeCli
+)
+
+Cidade(
+    codCidCli, 
+    nomeCidCli
+)
+
+Produto(
+    codProd, 
+    nomeProd
+)
+
+ItemPedido(
+    numPed, 
+    codProd, 
+    quant, 
+    valorUni, 
+    valorTotal
+)
+                </code></pre>
+                <p>Ações na 3FN:</p>
+                <ul>
+                    <li>Remover dependências transitivas</li>
+                    <li>Separar informações independentes</li>
+                    <li>Manter apenas dependências diretas</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Benefícios da Normalização</h2>
+                <ul>
+                    <li>Redução de redundância</li>
+                    <li>Integridade dos dados</li>
+                    <li>Facilidade de manutenção</li>
+                    <li>Menor consumo de espaço</li>
+                    <li>Consultas mais eficientes</li>
+                </ul>
+            </section>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+    <script>
+        Reveal.initialize({
+            width: 960,
+            height: 700,
+            margin: 0.1,
+            minScale: 0.2,
+            maxScale: 1.5
+        });
+    </script>
+</body>
+</html>
