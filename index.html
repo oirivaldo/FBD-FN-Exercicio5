@@ -1,218 +1,110 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Normalização Completa - Cliente e Pedido</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/white.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Normalização de Banco de Dados - 3FN</title>
     <style>
-        .reveal pre {
-            font-size: 0.6em;
-            line-height: 1.2;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
         }
-        .reveal table {
-            font-size: 0.7em;
+        .container {
+            width: 80%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .code {
+            background: #eee;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        .menu {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .menu a {
+            margin: 10px;
+            padding: 10px 15px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .menu a:hover {
+            background: #0056b3;
         }
     </style>
 </head>
 <body>
-    <div class="reveal">
-        <div class="slides">
-            <section>
-                <h1>Normalização Completa</h1>
-                <h3>Cliente e Pedido</h3>
-            </section>
+    <div class="container">
+        <h1>Normalização de Banco de Dados</h1>
+        <div class="menu">
+            <a href="#unf">Forma Não Normalizada</a>
+            <a href="#fn1">Primeira Forma Normal (1FN)</a>
+            <a href="#fn2">Segunda Forma Normal (2FN)</a>
+            <a href="#fn3">Terceira Forma Normal (3FN)</a>
+        </div>
 
-            <section>
-                <h2>Relações Originais</h2>
-                <pre><code>
-Cliente(
-    idCliente, 
-    nomeCliente, 
-    (idTrans, dataTrans, valorTrans)
-)
+        <div id="unf" class="section">
+            <h2>Forma Não Normalizada (UNF)</h2>
+            <p>A tabela contém atributos multivalorados, o que viola a normalização.</p>
+            <div class="code">
+                Cliente(idCliente, nomeCliente, (idTrans, dataTrans, valorTrans))<br>
+                Pedido(numPed, codCli, dataPed, nomeCli, codCidCli, nomeCidCli, (codProd, nomeProd, quant, valorUni, valorTotal))
+            </div>
+        </div>
 
-Pedido(
-    numPed, 
-    codCli, 
-    dataPed, 
-    nomeCli, 
-    codCidCli, 
-    nomeCidCli, 
-    (codProd, nomeProd, quant, valorUni, valorTotal)
-)
-                </code></pre>
-                <p>Problemas identificados:</p>
-                <ul>
-                    <li>Atributos multivalorados</li>
-                    <li>Redundância de dados</li>
-                    <li>Dependências não resolvidas</li>
-                </ul>
-            </section>
+        <div id="fn1" class="section">
+            <h2>Primeira Forma Normal (1FN)</h2>
+            <p>Removemos atributos multivalorados e criamos tabelas separadas.</p>
+            <div class="code">
+                Cliente(idCliente, nomeCliente)<br>
+                Transacao(idTrans, idCliente, dataTrans, valorTrans)<br>
+                Pedido(numPed, codCli, dataPed)<br>
+                ItensPedido(numPed, codProd, quant, valorUni, valorTotal)<br>
+                Produto(codProd, nomeProd)<br>
+                Cidade(codCidCli, nomeCidCli)
+            </div>
+        </div>
 
-            <section>
-                <h2>1ª Forma Normal (1FN)</h2>
-                <pre><code>
-Cliente(
-    idCliente, 
-    nomeCliente
-)
+        <div id="fn2" class="section">
+            <h2>Segunda Forma Normal (2FN)</h2>
+            <p>Eliminamos dependências parciais, organizando melhor os relacionamentos.</p>
+            <div class="code">
+                Cliente(codCli, nomeCli, codCidCli)<br>
+                Cidade(codCidCli, nomeCidCli)<br>
+                Pedido(numPed, codCli, dataPed)<br>
+                ItensPedido(numPed, codProd, quant, valorUni, valorTotal)<br>
+                Produto(codProd, nomeProd)<br>
+                Transacao(idTrans, idCliente, dataTrans, valorTrans)
+            </div>
+        </div>
 
-Transacao(
-    idCliente, 
-    idTrans, 
-    dataTrans, 
-    valorTrans
-)
-
-Pedido(
-    numPed, 
-    codCli, 
-    dataPed, 
-    nomeCli, 
-    codCidCli, 
-    nomeCidCli
-)
-
-ItemPedido(
-    numPed, 
-    codProd, 
-    nomeProd, 
-    quant, 
-    valorUni, 
-    valorTotal
-)
-                </code></pre>
-                <p>Ações na 1FN:</p>
-                <ul>
-                    <li>Eliminar grupos repetitivos</li>
-                    <li>Criar tabelas separadas para atributos multivalorados</li>
-                    <li>Garantir atributos atômicos</li>
-                </ul>
-            </section>
-
-            <section>
-                <h2>2ª Forma Normal (2FN)</h2>
-                <pre><code>
-Cliente(
-    idCliente, 
-    nomeCliente
-)
-
-Transacao(
-    idCliente, 
-    idTrans, 
-    dataTrans, 
-    valorTrans
-)
-
-Pedido(
-    numPed, 
-    codCli, 
-    dataPed
-)
-
-DadosPedido(
-    numPed, 
-    nomeCli
-)
-
-Cidade(
-    codCidCli, 
-    nomeCidCli
-)
-
-ItemPedido(
-    numPed, 
-    codProd, 
-    nomeProd, 
-    quant, 
-    valorUni, 
-    valorTotal
-)
-                </code></pre>
-                <p>Ações na 2FN:</p>
-                <ul>
-                    <li>Eliminar dependências parciais</li>
-                    <li>Separar informações relacionadas</li>
-                    <li>Criar tabelas independentes</li>
-                </ul>
-            </section>
-
-            <section>
-                <h2>3ª Forma Normal (3FN)</h2>
-                <pre><code>
-Cliente(
-    idCliente, 
-    nomeCliente
-)
-
-Transacao(
-    idCliente, 
-    idTrans, 
-    dataTrans, 
-    valorTrans
-)
-
-Pedido(
-    numPed, 
-    codCli, 
-    dataPed
-)
-
-DadosPedido(
-    numPed, 
-    nomeCli
-)
-
-Cidade(
-    codCidCli, 
-    nomeCidCli
-)
-
-Produto(
-    codProd, 
-    nomeProd
-)
-
-ItemPedido(
-    numPed, 
-    codProd, 
-    quant, 
-    valorUni, 
-    valorTotal
-)
-                </code></pre>
-                <p>Ações na 3FN:</p>
-                <ul>
-                    <li>Remover dependências transitivas</li>
-                    <li>Separar informações independentes</li>
-                    <li>Manter apenas dependências diretas</li>
-                </ul>
-            </section>
-
-            <section>
-                <h2>Benefícios da Normalização</h2>
-                <ul>
-                    <li>Redução de redundância</li>
-                    <li>Integridade dos dados</li>
-                    <li>Facilidade de manutenção</li>
-                    <li>Menor consumo de espaço</li>
-                    <li>Consultas mais eficientes</li>
-                </ul>
-            </section>
+        <div id="fn3" class="section">
+            <h2>Terceira Forma Normal (3FN)</h2>
+            <p>Removemos dependências transitivas e eliminamos atributos calculáveis.</p>
+            <div class="code">
+                Cliente(codCli, nomeCli, codCidCli)<br>
+                Cidade(codCidCli, nomeCidCli)<br>
+                Pedido(numPed, codCli, dataPed)<br>
+                ItensPedido(numPed, codProd, quant, valorUni)<br>
+                Produto(codProd, nomeProd)<br>
+                Transacao(idTrans, idCliente, dataTrans, valorTrans)
+            </div>
         </div>
     </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
-    <script>
-        Reveal.initialize({
-            width: 960,
-            height: 700,
-            margin: 0.1,
-            minScale: 0.2,
-            maxScale: 1.5
-        });
-    </script>
 </body>
 </html>
